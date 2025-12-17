@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Login View -->
+    <div id="loginView" class="login-container">
+        <div class="card login-card">
+            <div class="login-header">
+                <h1 class="login-title">🏥 Hospital Management System</h1>
+                <p class="login-subtitle">Please login to continue</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label" for="username">Username</label>
+                    <input type="text" id="username" class="form-control" placeholder="Enter username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Enter password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+            </form>
+            
+            <div style="margin-top: 2rem; padding: 1rem; background: var(--bg-glass); border-radius: var(--border-radius); font-size: 0.875rem;">
+                <p style="margin-bottom: 0.5rem; font-weight: 600;">Demo Credentials:</p>
+                <p>Admin: admin / admin123</p>
+                <p>Doctor: doctor1 / doctor123</p>
+                <p>Receptionist: receptionist1 / recep123</p>
+                <p>Patient: patient1 / patient123</p>
+            </div>
+            
+            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(20, 184, 166, 0.1); border-left: 4px solid var(--accent); border-radius: var(--border-radius); font-size: 0.875rem;">
+                <p style="margin: 0;">💡 <strong>Future Enhancement:</strong> SMS / Email reminders add kiye ja sakte hain.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="dashboard hidden">
+        <nav class="navbar">
+            <div class="navbar-content">
+                <div class="navbar-brand">🏥 HMS - Admin</div>
+                <div class="navbar-menu">
+                    <span style="color: var(--text-secondary);">Welcome, <strong id="adminUserName"></strong></span>
+                    <button id="logoutBtn" class="btn btn-danger btn-sm">Logout</button>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="container">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Admin Dashboard</h1>
+                <p class="dashboard-subtitle">Manage doctors, view reports, and oversee hospital operations</p>
+            </div>
+            
+            <div class="grid grid-4 mb-4">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalDoctors">0</div>
+                    <div class="stat-label">Total Doctors</div>
+                    <div class="stat-icon">👨‍⚕️</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value" id="totalPatients">0</div>
+                    <div class="stat-label">Total Patients</div>
+                    <div class="stat-icon">👥</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value" id="todayAppointments">0</div>
+                    <div class="stat-label">Today's Appointments</div>
+                    <div class="stat-icon">📅</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value" id="todayRevenue">₹0</div>
+                    <div class="stat-label">Today's Revenue</div>
+                    <div class="stat-icon">💰</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>Quick Actions</h3>
+                <div class="quick-actions">
+                    <button id="manageDoctorsBtn" class="btn btn-primary">👨‍⚕️ Manage Doctors</button>
+                    <button id="viewReportsBtn" class="btn btn-secondary">📊 View Reports</button>
+                </div>
+            </div>
+            
+            <div id="doctorListContainer" class="mt-4"></div>
+            <div id="reportsContainer" class="mt-4"></div>
+        </div>
+    </div>
+
+    <!-- Doctor Dashboard -->
+    <div id="doctorDashboard" class="dashboard hidden">
+        <nav class="navbar">
+            <div class="navbar-content">
+                <div class="navbar-brand">🏥 HMS - Doctor</div>
+                <div class="navbar-menu">
+                    <span style="color: var(--text-secondary);">Dr. <strong id="doctorUserName"></strong> | <span id="doctorSpecialization"></span></span>
+                    <button id="logoutBtn" class="btn btn-danger btn-sm">Logout</button>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="container">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Doctor Dashboard</h1>
+                <p class="dashboard-subtitle">View and manage your appointments</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Today's Appointments</h2>
+                </div>
+                <div id="doctorAppointmentsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receptionist Dashboard -->
+    <div id="receptionistDashboard" class="dashboard hidden">
+        <nav class="navbar">
+            <div class="navbar-content">
+                <div class="navbar-brand">🏥 HMS - Receptionist</div>
+                <div class="navbar-menu">
+                    <span style="color: var(--text-secondary);">Welcome, <strong id="receptionistUserName"></strong></span>
+                    <button id="logoutBtn" class="btn btn-danger btn-sm">Logout</button>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="container">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Receptionist Dashboard</h1>
+                <p class="dashboard-subtitle">Manage patients, appointments, and billing</p>
+            </div>
+            
+            <div class="grid grid-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-value" id="recepTotalPatients">0</div>
+                    <div class="stat-label">Total Patients</div>
+                    <div class="stat-icon">👥</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value" id="recepTodayAppointments">0</div>
+                    <div class="stat-label">Today's Appointments</div>
+                    <div class="stat-icon">📅</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value" id="recepPendingAppointments">0</div>
+                    <div class="stat-label">Pending Appointments</div>
+                    <div class="stat-icon">⏳</div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <h3>Quick Actions</h3>
+                <div class="quick-actions">
+                    <button id="addPatientBtn" class="btn btn-primary">➕ Add Patient</button>
+                    <button id="viewPatientsBtn" class="btn btn-primary">👥 View Patients</button>
+                    <button id="bookAppointmentBtn" class="btn btn-secondary">📅 Book Appointment</button>
+                    <button id="viewAppointmentsBtn" class="btn btn-secondary">📋 View Appointments</button>
+                    <button id="generateBillBtn" class="btn btn-success">💰 Generate Bill</button>
+                </div>
+            </div>
+            
+            <div id="patientListContainer"></div>
+            <div id="appointmentListContainer"></div>
+        </div>
+    </div>
+
+    <!-- Patient Dashboard -->
+    <div id="patientDashboard" class="dashboard hidden">
+        <nav class="navbar">
+            <div class="navbar-content">
+                <div class="navbar-brand">🏥 HMS - Patient Portal</div>
+                <div class="navbar-menu">
+                    <span style="color: var(--text-secondary);">Welcome, <strong id="patientUserName"></strong></span>
+                    <button id="logoutBtn" class="btn btn-danger btn-sm">Logout</button>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="container">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Patient Dashboard</h1>
+                <p class="dashboard-subtitle">View your appointments and medical history</p>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2 class="card-title">My Appointments</h2>
+                </div>
+                <div id="patientAppointmentsList"></div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Medical History</h2>
+                </div>
+                <div id="patientMedicalHistory"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    
+    <!-- Add Patient Modal -->
+    <div id="addPatientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Patient</h3>
+                <button class="modal-close" onclick="utils.closeModal('addPatientModal')">×</button>
+            </div>
+            
+            <form id="addPatientForm">
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" name="name" class="form-control" required>
+                </div>
+                
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Age</label>
+                        <input type="number" name="age" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <select name="gender" class="form-control" required>
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Contact Number</label>
+                    <input type="tel" name="contact" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <textarea name="address" class="form-control" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Medical History</label>
+                    <textarea name="medicalHistory" class="form-control"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Save Patient</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Patient Modal -->
+    <div id="editPatientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Patient</h3>
+                <button class="modal-close" onclick="utils.closeModal('editPatientModal')">×</button>
+            </div>
+            
+            <form id="editPatientForm">
+                <input type="hidden" id="editPatientId">
+                
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" name="editPatientName" id="editPatientName" class="form-control" required>
+                </div>
+                
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Age</label>
+                        <input type="number" name="editPatientAge" id="editPatientAge" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <select name="editPatientGender" id="editPatientGender" class="form-control" required>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Contact Number</label>
+                    <input type="tel" name="editPatientContact" id="editPatientContact" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <textarea name="editPatientAddress" id="editPatientAddress" class="form-control" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Medical History</label>
+                    <textarea name="editPatientHistory" id="editPatientHistory" class="form-control"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Update Patient</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Patient Modal -->
+    <div id="viewPatientModal" class="modal">
+        <div class="modal-content">
+            <!-- Content will be dynamically generated -->
+        </div>
+    </div>
+
+    <!-- Add Doctor Modal -->
+    <div id="addDoctorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Doctor</h3>
+                <button class="modal-close" onclick="utils.closeModal('addDoctorModal')">×</button>
+            </div>
+            
+            <form id="addDoctorForm">
+                <div class="form-group">
+                    <label class="form-label">Doctor Name</label>
+                    <input type="text" name="doctorName" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Specialization</label>
+                    <input type="text" name="specialization" class="form-control" placeholder="e.g., Cardiology, Pediatrics" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Add Doctor</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Doctor Modal -->
+    <div id="editDoctorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Doctor</h3>
+                <button class="modal-close" onclick="utils.closeModal('editDoctorModal')">×</button>
+            </div>
+            
+            <form id="editDoctorForm">
+                <input type="hidden" id="editDoctorId">
+                
+                <div class="form-group">
+                    <label class="form-label">Doctor Name</label>
+                    <input type="text" name="editDoctorName" id="editDoctorName" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Specialization</label>
+                    <input type="text" name="editDoctorSpecialization" id="editDoctorSpecialization" class="form-control" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Update Doctor</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Book Appointment Modal -->
+    <div id="bookAppointmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Book Appointment</h3>
+                <button class="modal-close" onclick="utils.closeModal('bookAppointmentModal')">×</button>
+            </div>
+            
+            <form id="bookAppointmentForm">
+                <div class="form-group">
+                    <label class="form-label">Select Patient</label>
+                    <select name="appointmentPatient" id="appointmentPatient" class="form-control" required>
+                        <option value="">Select Patient</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Select Doctor (Available Only)</label>
+                    <select name="appointmentDoctor" id="appointmentDoctor" class="form-control" required>
+                        <option value="">Select Doctor</option>
+                    </select>
+                </div>
+                
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" name="appointmentDate" id="appointmentDate" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Time</label>
+                        <input type="time" name="appointmentTime" id="appointmentTime" class="form-control" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Book Appointment</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Consultation Modal -->
+    <div id="consultationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Patient Consultation</h3>
+                <button class="modal-close" onclick="utils.closeModal('consultationModal')">×</button>
+            </div>
+            
+            <div style="background: var(--bg-glass); padding: 1rem; border-radius: var(--border-radius); margin-bottom: 1rem;">
+                <p><strong>Patient:</strong> <span id="consultationPatientName"></span></p>
+                <p><strong>Age:</strong> <span id="consultationPatientAge"></span></p>
+                <p><strong>Medical History:</strong> <span id="consultationPatientHistory"></span></p>
+            </div>
+            
+            <form id="consultationForm">
+                <input type="hidden" id="consultationAppointmentId">
+                
+                <div class="form-group">
+                    <label class="form-label">Diagnosis</label>
+                    <textarea name="diagnosis" class="form-control" rows="4" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Prescription</label>
+                    <textarea name="prescription" class="form-control" rows="4" required></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-success">Save Consultation</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Consultation Modal -->
+    <div id="viewConsultationModal" class="modal">
+        <div class="modal-content">
+            <!-- Content will be dynamically generated -->
+        </div>
+    </div>
+
+    <!-- Billing Modal -->
+    <div id="billingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Generate Bill</h3>
+                <button class="modal-close" onclick="utils.closeModal('billingModal')">×</button>
+            </div>
+            
+            <form id="billingForm">
+                <div class="form-group">
+                    <label class="form-label">Select Patient</label>
+                    <select name="billingPatient" id="billingPatient" class="form-control" required>
+                        <option value="">Select Patient</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Consultation Fee</label>
+                    <input type="number" name="consultationFee" id="consultationFee" class="form-control" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Other Charges</label>
+                    <input type="number" name="otherCharges" id="otherCharges" class="form-control" step="0.01" value="0">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Total Amount</label>
+                    <input type="number" id="totalAmount" class="form-control" readonly>
+                </div>
+                
+                <button type="submit" class="btn btn-success">Generate Invoice</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Invoice Modal -->
+    <div id="invoiceModal" class="modal">
+        <div class="modal-content">
+            <!-- Content will be dynamically generated -->
+        </div>
+    </div>
+
+    <!-- Discharge Summary Modal -->
+    <div id="dischargeSummaryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create Discharge Summary</h3>
+                <button class="modal-close" onclick="utils.closeModal('dischargeSummaryModal')">×</button>
+            </div>
+            
+            <form id="dischargeSummaryForm">
+                <div class="form-group">
+                    <label class="form-label">Select Patient</label>
+                    <select name="dischargePatient" id="dischargePatient" class="form-control" required>
+                        <option value="">Select Patient</option>
+                    </select>
+                </div>
+                
+                <div id="dischargePatientInfo"></div>
+                
+                <div class="form-group">
+                    <label class="form-label">Diagnosis</label>
+                    <textarea name="dischargeDiagnosis" id="dischargeDiagnosis" class="form-control" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Treatment Given</label>
+                    <textarea name="dischargeTreatment" id="dischargeTreatment" class="form-control" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Doctor's Remarks</label>
+                    <textarea name="dischargeRemarks" id="dischargeRemarks" class="form-control" rows="2"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-success">Save Discharge Summary</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Discharge Summary Modal -->
+    <div id="viewDischargeSummaryModal" class="modal">
+        <div class="modal-content">
+            <!-- Content will be dynamically generated -->
+        </div>
+    </div>
+
+    <!-- Load Scripts -->
+    <script src="data.js"></script>
+    <script src="auth.js"></script>
+    <script src="utils.js"></script>
+    <script src="dashboards.js"></script>
+    <script src="patient-management.js"></script>
+    <script src="doctor-management.js"></script>
+    <script src="appointment-scheduling.js"></script>
+    <script src="consultation.js"></script>
+    <script src="billing.js"></script>
+    <script src="discharge-summary.js"></script>
+    <script src="reports.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
